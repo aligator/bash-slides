@@ -42,7 +42,7 @@ dass einfach direkt am Anfang gestartet wird. (eine sogenannte `Shell`)
 
 ---
 ## Was ist Bash
-Man kann aber natürlich z.B. aus Windows heraus auch immer ein Terminal Fenster gestartet werden,
+Man kann natürlich z.B. aus Windows heraus auch immer ein Terminal Fenster gestartet werden,
 dass dann die Standard `Text-Shell` startet.  
 
 (e.g. Windows Terminal fenster mit `cmd` oder `powershell`, in linux ein Terminal Fenster mit `sh`, `bash`, `zsh`, `fish`, ...)
@@ -68,10 +68,10 @@ ls -l /
 ## Was ist ein Shell-Script
 Das alleine ist ja schon extrem `Powerfull`, denn damit kann man ja eigentlich einfach alles starten.
 
-Aber damit man aber auch `Programmlogik` erstellen kann, sind die meisten Shells eigentlich komplette 
+Damit man auch `Programmlogik` erstellen kann, sind die meisten Shells eigentlich komplette 
 `Interpreter` für vollständige `Programmiersprachen`.
 
-Heist es gibt:
+Heisst es gibt:
 * `if`
 * `for`
 * `funktionen`
@@ -81,9 +81,13 @@ Man kann diese Dinge alle auch direkt in der `Interaktiven` Shell verwenden! (Ab
 
 ---
 ## Was ist ein Shell-Script
-Aber jede variante von shells hat natürlich einen eigenen Syntax.
+Jede Variante von shells hat natürlich einen eigenen Syntax.
 
-Da die Shells z.T. recht sind (e.g. `CMD`, `bash`) sind die Sprachenfeatures natürlich `gewachsen`.
+Da die Shells z.T. recht alt sind (e.g. `CMD`, `bash`) sind die Sprachenfeatures natürlich `gewachsen`.
+Der Syntax ist damit manchmal etwas gewöhnungsbedürftig.
+
+Allerdings finde ich ist die bash wesentlich durchdachter als die `CMD`.
+Das hat Microsoft wohl auch so gesehen, deswegen gibt es ja jetzt die `Powershell`.
 
 ---
 ## Bash
@@ -103,7 +107,8 @@ Ausnahmen bestätigen die Regel:
 * manche distros haben andere shells, z.B. aus Platzgründen: 
   * `busybox` variante `ash` in Alpine Linux
   * `busybox` ist eine recht platzsparende `singlebinary` shell, wird gerne in embedded linux und docker verwendet
-
+* einige distros haben per default `zsh` (oder was anderes), aber normalerweise auch immer `bash` und `sh`.
+* Mac hat (AFAIK) auch zsh vorinstalliert.
 ---
 ## Grundlagen
 ### Shebang
@@ -118,6 +123,9 @@ echo "Hello World"
 
 --- 
 
+Es kann also im Prinzip jedes beliebige Programm verwendet werden.
+Hier z.B. Python was den shebang out of the box unterstützt.
+
 ```python
 #!/bin/python
 x = 1
@@ -125,6 +133,11 @@ if x == 1:
     # indented four spaces
     print("x is 1.")
 ```
+
+TIPP: schau mal an den anfang dieser `presentation.md`, da ist ein kleiner shebang-hack
+durch den man einfach die Markdown Datei direkt `ausführen` kann mit `./presentation.md`.
+
+Verstehst du den "Hack"?
 
 ---
 ## Grundlagen
