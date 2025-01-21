@@ -6,3 +6,13 @@ Then run:
 ```
 ./presentation.md
 ```
+
+or 
+
+```
+./presentation.md serve
+```
+which will start an ssh server to connect to:
+```
+ssh localhost -p 53531
+```

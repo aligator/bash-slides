@@ -1,0 +1,3 @@
+*.txt
+!dummy*.txt
+*_ed25519*
