@@ -16,6 +16,15 @@ author: Johannes Hörmann <me@aligator.dev>
 date: DD.MM.YYYY
 ---
 
+# Nutzung
+
+https://github.com/maaslalani/slides
+e
+* Pfeiltasten (links / rechts)
+* `STRG + e` führt beispielscripte aus
+
+---
+
 # Bash
 Was ist das eigentlich?
 
@@ -269,21 +278,28 @@ https://unix.stackexchange.com/questions/306111/what-is-the-difference-between-t
 ### Aufgaben
 #### 2 - if 
 Schreibe ein Programm, das 
-* "Datei gefunden" ausgibt, wenn die Datei `` existiert.
-* "Datei nicht gefunden" ausgibt, wenn die Datei `~/testfile.txt` nicht existiert.
+* "Datei gefunden" ausgibt, wenn die angegebene Datei existiert.
+* "Datei nicht gefunden" ausgibt, wenn die Datei angegebene Datei `nicht` existiert.
 
 ---
 ## Grundlagen
 ### Aufgaben
 #### 2 - if 
 ```bash
-if [ -f "~/testfile.txt" ]; then
+if [ -f "./dummy1.txt" ]; then
   echo "Datei gefunden"
 else 
   echo "Datei nicht gefunden"
 fi
 ```
 
+```bash
+if [ -f "./non_existent.txt" ]; then
+  echo "Datei gefunden"
+else 
+  echo "Datei nicht gefunden"
+fi
+```
 ---
 ## Grundlagen
 ### Aufgaben
@@ -747,17 +763,21 @@ In Bash gibt es verschiedene Möglichkeiten die Ein-/Ausgabe umzuleiten:
 
 Beispiele:
 ```bash
+tempFolder=$(mktemp -d)
+
 # Ausgabe in Datei schreiben (überschreibt alte Datei)
-echo "Hallo" > ausgabe.txt
+echo "Hallo" > "$tempFolder/ausgabe.txt"
 
 # Ausgabe an Datei anhängen
-echo "Welt" >> ausgabe.txt
+echo "Welt" >> "$tempFolder/ausgabe.txt"
 
 # Eingabe aus Datei lesen
-sort < namen.txt
+sort < "$tempFolder/ausgabe.txt"
 
 # Mehrere Befehle verketten (Pipes)
-cat datei.txt | grep "Hallo" | wc -l
+cat "$tempFolder/ausgabe.txt" | grep "Hallo" | wc -l
+
+rm -Rf "$tempFolder"
 ```
 
 ---
@@ -771,14 +791,26 @@ Es gibt auch Umleitungen für Fehlerausgaben:
 
 Beispiele:
 ```bash
+///tempFolder=$(mktemp -d)
 # Nur Fehler in Datei schreiben
-ls nicht-da.txt 2> fehler.log
+ls *.txt nicht-da.txt 2> $tempFolder/fehler.log
+echo Fehler:
+cat $tempFolder/fehler.log
+echo ---
 
 # Normale Ausgabe und Fehler in verschiedene Dateien
-ls *.txt > ausgabe.log 2> fehler.log
+ls *.txt nicht-da.txt > $tempFolder/ausgabe.log 2> $tempFolder/fehler.log
+echo Ausgabe:
+cat $tempFolder/ausgabe.log
+echo Fehler:
+cat $tempFolder/fehler.log
 
+echo ---
 # Beide in die gleiche Datei
-ls *.txt > alle.log 2>&1
+ls *.txt nicht-da.txt > $tempFolder/alle.log 2>&1
+echo Alle:
+cat $tempFolder/alle.log
+///rm -Rf "$tempFolder"
 ```
 
 ---
@@ -798,26 +830,26 @@ Aufgabe: Schreibe ein Programm das:
 Lösung:
 ```bash
 #!/usr/bin/env bash
-
+tempFolder=$(mktemp -d)
 # Erste Liste schreiben
 echo "Apfel
 Banane
-Citrone" > fruechte.txt
+Citrone" > $tempFolder/fruechte.txt
 
 # Weitere Früchte anhängen
 echo "Banane
 Dattel
-Apfel" >> fruechte.txt
+Apfel" >> $tempFolder/fruechte.txt
 
 # Sortieren, Duplikate entfernen und in neue Datei schreiben
-sort fruechte.txt | uniq > sortiert.txt
+sort $tempFolder/fruechte.txt | uniq > $tempFolder/sortiert.txt
 
 # Ergebnis anzeigen
 echo "Sortierte Liste ohne Duplikate:"
-cat sortiert.txt
+cat $tempFolder/sortiert.txt
 
 # Beispiel aufräumen
-rm fruechte.txt sortiert.txt
+rm -Rf "$tempFolder"
 ```
 
 Erklärung der Pipe `sort | uniq`:
@@ -861,13 +893,13 @@ Wichtige Unix Tools (meist vorinstalliert):
 Beispiele für Kombinationen:
 ```bash
 # Alle .txt Dateien finden und deren Inhalt durchsuchen
-find . -name "*.txt" -exec grep "Hallo" {} \;
+find . -name "*.txt" -exec grep "Peter" {} \;
 
 # Alternative mit Pipe
-find . -name "*.txt" | xargs grep "Hallo"
+find . -name "*.txt" | xargs grep "Peter"
 
 # Text in allen Dateien ersetzen
-sed -i 's/alt/neu/g' *.txt
+sed -i 's/alt/neu/g' some_file.txt
 
 # Komplexe Textverarbeitung mit awk
 ls -l | awk '{sum += $5} END {print "Gesamtgröße: " sum " Bytes"}'
@@ -893,6 +925,7 @@ Lösung:
 
 echo "Nach was sollen wir suchen?"
 read -r suchbegriff
+///suchbegriff=Peter
 
 echo "Suche nach: $suchbegriff"
 echo "---"
@@ -936,9 +969,11 @@ printenv PATH
 
 # Variable setzen (nur für aktuelles Script)
 PATH="/usr/local/bin:$PATH"
+echo $PATH
 
 # Variable exportieren (für alle Kindprozesse)
 export PATH="/usr/local/bin:$PATH"
+echo $PATH
 ```
 
 ---
@@ -954,13 +989,13 @@ Die wichtigste Umgebungsvariable: `PATH`
 Beispiel:
 ```bash
 echo $PATH
-# /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 # Eigenes Verzeichnis zum PATH hinzufügen
-export PATH="$HOME/bin:$PATH"
+export PATH="$(pwd)/bin:$PATH"
+echo $PATH
 
 # Jetzt werden auch Programme in ~/bin gefunden
-meinscript.sh   # funktioniert wenn es in ~/bin liegt
+hello.sh  # funktioniert wenn es in ~/bin liegt
 ```
 
 ---
@@ -1026,54 +1061,63 @@ Es gibt für sehr viele nervige Tasks ganz spezielle Programme, mit denen man vi
 ## Ende
 ### Beispiele:
 * Zuschneiden von Bildern mit imagemagick:
-  ```bash
-  # Alle JPGs rekursiv verkleinern:
-  find . -name "*.jpg" -exec convert {} -resize 800x {} \;
-  ```
+```bash
+# Alle JPGs rekursiv verkleinern:
+find . -name "*.jpg" -exec convert {} -resize 800x {} \;
+```
 
 ---
 ## Ende
 ### Beispiele:
 
 * Durchhangeln durch JSON mit jq:
-  ```bash
-  # Alle Namen aus einem JSON Array extrahieren:
-  cat data.json | jq -r '.users[].name'
-  # Komplexere Transformation:
-  cat data.json | jq '.users[] | select(.age > 18) | {name, email}'
-  ```
+```bash
+# Alle Namen aus einem JSON Array extrahieren:
+cat data.json | jq -r '.users[].name'
+# Komplexere Transformation:
+cat data.json | jq '.users[] | select(.age > 18) | {name, email}'
+```
 
 ---
 ## Ende
 ### Beispiele:
 
 * Bulk Umbenennungen von Dateien:
-  ```bash
-  # Alle Leerzeichen durch Unterstriche ersetzen:
-  find . -type f -name "* *" -exec bash -c 'mv "$1" "${1// /_}"' _ {} \;
-  ```
+```bash
+///tempFolder=$(mktemp -d)
+///touch "$tempFolder/testfile 1.txt"
+///touch "$tempFolder/testfile 2.txt"
+///touch "$tempFolder/testfile3.txt"
+ls $tempFolder
+echo ""
+
+# Alle Leerzeichen durch Unterstriche ersetzen:
+find $tempFolder -type f -name "* *" -exec bash -c 'mv "$1" "${1// /_}"' _ {} \;
+ls $tempFolder
+///rm -Rf $tempFolder
+```
 
 ---
 ## Ende
 ### Beispiele:
 
 * Dateien finden und verarbeiten:
-  ```bash
-  # Alle PDFs finden die älter als 30 Tage sind:
-  find . -name "*.pdf" -mtime +30
-  # Alle leeren Dateien löschen:
-  find . -type f -empty -delete
-  ```
+```bash
+# Alle PDFs finden die älter als 30 Tage sind:
+find /some/folder -name "*.pdf" -mtime +30
+# Alle leeren Dateien löschen:
+find /some/folder -type f -empty -delete
+```
 
 ---
 ## Ende
 ### Beispiele:
 
 * Text in vielen Dateien ersetzen:
-  ```bash
-  # In allen .txt Dateien 'alt' durch 'neu' ersetzen:
-  find . -name "*.txt" -exec sed -i 's/alt/neu/g' {} \;
-  ```
+```bash
+# In allen .txt Dateien 'alt' durch 'neu' ersetzen:
+find /some/folder -name "*.txt" -exec sed -i 's/alt/neu/g' {} \;
+```
 
 ---
 ## Ende
