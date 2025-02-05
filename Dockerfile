@@ -8,4 +8,4 @@ COPY . .
 
 EXPOSE 53531
 ENTRYPOINT ["./presentation.md"]
-CMD ["serve"]
+CMD ["serve", "--host", "0.0.0.0"]
