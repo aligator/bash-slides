@@ -5,3 +5,5 @@ services:
     restart: unless-stopped
     ports:
       - "53531:53531"
+    volumes:
+      - ./keys:/keys

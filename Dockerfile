@@ -10,6 +10,7 @@ RUN go install github.com/maaslalani/slides@latest
 
 COPY . .
 
+VOLUME /keys
 EXPOSE 53531
 ENTRYPOINT ["./presentation.md"]
-CMD ["serve", "--host", "0.0.0.0"]
+CMD ["serve", "--keyPath", "/keys", "--host", "0.0.0.0"]
