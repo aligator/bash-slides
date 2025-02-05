@@ -1,15 +1,16 @@
 #!/bin/sh
 # A neat hack to make this file self-executable ;-)
 
-lines='1,13d'
+lines='1,14d'
 if command -v slides >/dev/null 2>&1; then
-  exec sed $lines "$0" | slides "$@"
+  exec sed $lines "$0" | slides $@
 elif command -v go >/dev/null 2>&1; then
   go install github.com/maaslalani/slides@latest
-  exec sed $lines "$0" | $(go env GOPATH)/bin/slides "$@"
+  exec sed $lines "$0" | $(go env GOPATH)/bin/slides $@
 else
   echo "Please install Go or the slides tool directly: https://github.com/maaslalani/slides"
 fi
+exit
 
 ---
 author: Johannes Hörmann <me@aligator.dev>

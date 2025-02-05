@@ -1,0 +1,7 @@
+services:
+  slides:
+    build: .
+    pull_policy: build
+    restart: unless-stopped
+    ports:
+      - "53531:53531"
